@@ -2,12 +2,14 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Prowl.PaperUI;
+using Shared;
 
 namespace OpenTKSample
 {
     public class PaperTKWindow : GameWindow
     {
         private PaperRenderer _renderer;
+        private ComponentDemo _componentDemo;
 
         public PaperTKWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -18,7 +20,9 @@ namespace OpenTKSample
             base.OnLoad();
             _renderer = new PaperRenderer();
             _renderer.Initialize(ClientRectangle.Size.X, ClientRectangle.Size.Y);
-            Shared.PaperDemo.Initialize();
+            //Shared.PaperDemo.Initialize();
+            _componentDemo = new ComponentDemo();
+            _componentDemo.Initialize();
             Paper.Initialize(_renderer, ClientRectangle.Size.X, ClientRectangle.Size.Y);
         }
 
@@ -31,7 +35,8 @@ namespace OpenTKSample
 
             Paper.BeginFrame((float)args.Time);
 
-            Shared.PaperDemo.RenderUI();
+            //Shared.PaperDemo.RenderUI();
+            _componentDemo.RenderUI();
 
             Paper.EndFrame();
 
