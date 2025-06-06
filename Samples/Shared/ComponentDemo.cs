@@ -25,7 +25,6 @@ namespace Shared
 
         // Sample data for visualization
         double[] dataPoints = { 0.2f, 0.5f, 0.3f, 0.8f, 0.4f, 0.7f, 0.6f };
-        readonly string[] tabNames = { "Dashboard", "Analytics", "Profile", "Settings", "Windows" };
 
         //Theme
         public static Color backgroundColor;
@@ -77,6 +76,8 @@ namespace Shared
             // Update time for animations
             time += 0.016f; // Assuming ~60fps
 
+            DefineStyles();
+
             using (Paper.Column("MainContainer").BackgroundColor(backgroundColor).Enter())
             {
                 RenderTopNavBar();
@@ -97,11 +98,71 @@ namespace Shared
         }
         private void RenderSidebar()
         {
+            using (Paper.Column("Sidebar")
+             .Style("sidebar")
+             .Hovered.Style("sidebar.expanded").End()
+             .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
+             .Transition(GuiProp.BorderColor, 0.75f)
+             .Transition(GuiProp.BorderWidth, 0.75f)
+             .Transition(GuiProp.Rounded, 0.25f)
+             .Margin(15)
+             .Enter())
+            {
+                // Menu header
+                Paper.Box("MenuHeader").Height(60).Text(Text.Center("Menu", fontMedium, textColor));
+
+                string[] menuIcons = { Icons.House, Icons.ChartBar, Icons.User, Icons.Gear, Icons.WindowMaximize };
+                string[] menuItems = { "Button", "Layout" };
+
+                for (int i = 0; i < menuItems.Length; i++)
+                {
+                    int index = i;
+
+                    using (Paper.Box($"MenuItemContainer_{i}")
+                        .Height(50)
+                        .Margin(10, 10, 5, 5)
+                        .Rounded(8)
+                        .BorderColor(primaryColor)
+                        .BorderWidth(selectedTabIndex == index ? 2 : 0)
+                        .OnClick((rect) => selectedTabIndex = index)
+                        .Hovered
+                            .BackgroundColor(Color.FromArgb(20, primaryColor))
+                            //.BorderWidth(2)
+                            .End()
+                        //.Transition(GuiProp.BackgroundColor, 0.05f)
+                        .Transition(GuiProp.BorderWidth, 0.1f)
+                        .Clip()
+                        .Enter()
+                        )
+                    {
+                        var icon = Paper.Box($"MenuItemIcon_{i}")
+                            .Width(55)
+                            .Height(50)
+                            .Text(Text.Center(menuIcons[i], fontSmall, textColor));
+
+                        var but = Paper.Box($"MenuItem_{i}")
+                            .Width(100)
+                            .PositionType(PositionType.SelfDirected)
+                            .Left(50 + 15)
+                            .Text(Text.Center($"{menuItems[i]}", fontSmall, textColor));
+                    }
+                }
+            }
         }
 
         private void RenderMainContent()
         {
-            ButtonDemo.Render();
+            using (Paper.Column("MainContent")
+            .Style("mainContent")
+            .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
+            .Transition(GuiProp.BorderColor, 0.75f)
+            .Transition(GuiProp.BorderWidth, 0.75f)
+            .Transition(GuiProp.Rounded, 0.25f)
+            .Margin(15)
+            .Enter())
+            {
+                ButtonDemo.Render();
+            }
         }
 
         private void RenderFooter()
@@ -113,6 +174,11 @@ namespace Shared
         {
             isDark = !isDark;
 
+            DefineStyles();
+        }
+
+        private void DefineStyles()
+        {
             if (isDark)
             {
                 //Dark
@@ -149,29 +215,27 @@ namespace Shared
                 ];
             }
 
-            // Redefine styles with new theme colors
-            DefineStyles();
-        }
+            ButtonDemo.DefineStyle();
 
-        private void DefineStyles()
-        {
+            Paper.DefineStyle("mainContent")
+                .BackgroundColor(cardBackground)
+                .Rounded(8);
+
             // Sidebar styles
             Paper.DefineStyle("sidebar")
                 .BackgroundColor(cardBackground)
                 .Rounded(8)
-                .Width(75);
+                .Width(240);
 
             // Expanded sidebar
             Paper.DefineStyle("sidebar.expanded")
-                .Width(240)
                 .BorderColor(primaryColor)
-                .BorderWidth(3)
-                .Rounded(16);
+                .BorderWidth(1);
 
             // Button
-            Paper.DefineStyle("button")
-                .Height(40)
-                .Rounded(8);
+            //Paper.DefineStyle("button")
+            //    .Height(40)
+            //    .Rounded(8);
 
             // Primary button
             Paper.DefineStyle("button.primary")
