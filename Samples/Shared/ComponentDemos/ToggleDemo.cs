@@ -3,7 +3,7 @@ using Prowl.PaperUI;
 
 namespace Shared.ComponentDemos;
 
-public class ButtonDemo : IDemo
+public class ToggleDemo : IDemo
 {
     public void DefineStyle()
     {

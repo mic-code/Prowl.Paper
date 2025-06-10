@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using Prowl.PaperUI;
 using Shared;
+using Prowl.PaperUI;
 
 namespace OpenTKSample
 {
@@ -10,6 +10,8 @@ namespace OpenTKSample
     {
         private PaperRenderer _renderer;
         private ComponentDemo _componentDemo;
+
+        bool componentDemo = true;
 
         public PaperTKWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
@@ -20,9 +22,15 @@ namespace OpenTKSample
             base.OnLoad();
             _renderer = new PaperRenderer();
             _renderer.Initialize(ClientRectangle.Size.X, ClientRectangle.Size.Y);
-            //Shared.PaperDemo.Initialize();
-            _componentDemo = new ComponentDemo();
-            _componentDemo.Initialize();
+            if (componentDemo)
+            {
+
+                _componentDemo = new ComponentDemo();
+                _componentDemo.Initialize();
+            }
+            else
+                PaperDemo.Initialize();
+
             Paper.Initialize(_renderer, ClientRectangle.Size.X, ClientRectangle.Size.Y);
         }
 
@@ -35,8 +43,10 @@ namespace OpenTKSample
 
             Paper.BeginFrame((float)args.Time);
 
-            //Shared.PaperDemo.RenderUI();
-            _componentDemo.RenderUI();
+            if (componentDemo)
+                _componentDemo.RenderUI();
+            else
+                PaperDemo.RenderUI();
 
             Paper.EndFrame();
 
@@ -99,7 +109,8 @@ namespace OpenTKSample
 
         private PaperMouseBtn TranslateMouseButton(OpenTK.Windowing.GraphicsLibraryFramework.MouseButton button)
         {
-            return button switch {
+            return button switch
+            {
                 OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Left => PaperMouseBtn.Left,
                 OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Right => PaperMouseBtn.Right,
                 OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Middle => PaperMouseBtn.Middle,
@@ -109,7 +120,8 @@ namespace OpenTKSample
 
         public PaperKey TranslateKey(OpenTK.Windowing.GraphicsLibraryFramework.Keys tk)
         {
-            return tk switch {
+            return tk switch
+            {
                 OpenTK.Windowing.GraphicsLibraryFramework.Keys.Unknown => PaperKey.Unknown,
                 OpenTK.Windowing.GraphicsLibraryFramework.Keys.Space => PaperKey.Space,
                 OpenTK.Windowing.GraphicsLibraryFramework.Keys.Apostrophe => PaperKey.Apostrophe,

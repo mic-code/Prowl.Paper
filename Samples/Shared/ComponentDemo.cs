@@ -1,6 +1,5 @@
 ﻿using FontStashSharp;
 using System.Drawing;
-
 using Prowl.PaperUI;
 using Prowl.Vector;
 using System.Reflection;
@@ -31,12 +30,15 @@ namespace Shared
         public static Color cardBackground;
         public static Color primaryColor;
         public static Color secondaryColor;
+        public static Color tertiaryColor;
         public static Color textColor;
         public static Color lightTextColor;
         public static Color[] colorPalette;
-        bool isDark;
+        public static bool isDark;
 
-        double time = 0;
+        static IDemo[] demos;
+
+        public static double time = 0;
 
         string searchText = "";
         bool searchFocused = false;
@@ -69,6 +71,13 @@ namespace Shared
             fontLarge = fontSystem.GetFont(32);
             fontTitle = fontSystem.GetFont(40);
             DefineStyles();
+
+            demos = new IDemo[]
+            {
+                new ButtonDemo(),
+                new ToggleDemo(),
+                new ListDemo()
+            };
         }
 
         public void RenderUI()
@@ -110,11 +119,9 @@ namespace Shared
             {
                 // Menu header
                 Paper.Box("MenuHeader").Height(60).Text(Text.Center("Menu", fontMedium, textColor));
-
                 string[] menuIcons = { Icons.House, Icons.ChartBar, Icons.User, Icons.Gear, Icons.WindowMaximize };
-                string[] menuItems = { "Button", "Layout" };
 
-                for (int i = 0; i < menuItems.Length; i++)
+                for (int i = 0; i < demos.Length; i++)
                 {
                     int index = i;
 
@@ -144,7 +151,7 @@ namespace Shared
                             .Width(100)
                             .PositionType(PositionType.SelfDirected)
                             .Left(50 + 15)
-                            .Text(Text.Center($"{menuItems[i]}", fontSmall, textColor));
+                            .Text(Text.Center($"{demos[i].GetType().Name.Replace("Demo", "")}", fontSmall, textColor));
                     }
                 }
             }
@@ -158,10 +165,16 @@ namespace Shared
             .Transition(GuiProp.BorderColor, 0.75f)
             .Transition(GuiProp.BorderWidth, 0.75f)
             .Transition(GuiProp.Rounded, 0.25f)
-            .Margin(15)
+            .Margin(0, 15, 15, 15)
             .Enter())
             {
-                ButtonDemo.Render();
+                if (selectedTabIndex < demos.Length)
+                {
+                    var demo = demos[selectedTabIndex];
+                    Paper.Box("Header").Height(60).Text(Text.Center(demo.GetType().Name, ComponentDemo.fontMedium, ComponentDemo.textColor));
+                    demo.DefineStyle();
+                    demo.Render();
+                }
             }
         }
 
@@ -186,6 +199,7 @@ namespace Shared
                 cardBackground = Color.FromArgb(255, 30, 30, 46);
                 primaryColor = Color.FromArgb(255, 94, 104, 202);
                 secondaryColor = Color.FromArgb(255, 162, 155, 254);
+                tertiaryColor = Color.FromArgb(255, 255, 255, 0);
                 textColor = Color.FromArgb(255, 226, 232, 240);
                 lightTextColor = Color.FromArgb(255, 148, 163, 184);
                 colorPalette = [
@@ -204,6 +218,7 @@ namespace Shared
                 cardBackground = Color.FromArgb(255, 255, 255, 255);
                 primaryColor = Color.FromArgb(255, 59, 130, 246);
                 secondaryColor = Color.FromArgb(255, 16, 185, 129);
+                tertiaryColor = Color.FromArgb(255, 255, 255, 0);
                 textColor = Color.FromArgb(255, 31, 41, 55);
                 lightTextColor = Color.FromArgb(255, 107, 114, 128);
                 colorPalette = [
@@ -214,8 +229,6 @@ namespace Shared
                     Color.FromArgb(255, 139, 92, 246)    // Purple
                 ];
             }
-
-            ButtonDemo.DefineStyle();
 
             Paper.DefineStyle("mainContent")
                 .BackgroundColor(cardBackground)
