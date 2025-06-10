@@ -8,41 +8,41 @@ using System.Reflection;
 
 namespace Shared
 {
-    public static class PaperDemo
+    public class PaperDemo : IDemoThumbnail
     {
-        static FontSystem fontSystem;
-        static SpriteFontBase fontSmall;
-        static SpriteFontBase fontMedium;
-        static SpriteFontBase fontLarge;
-        static SpriteFontBase fontTitle;
+         FontSystem fontSystem;
+         SpriteFontBase fontSmall;
+         SpriteFontBase fontMedium;
+         SpriteFontBase fontLarge;
+         SpriteFontBase fontTitle;
 
         // Track state for interactive elements
-        static double sliderValue = 0.5f;
-        static int selectedTabIndex = 0;
-        static Vector2 chartPosition = new Vector2(0, 0);
-        static double zoomLevel = 1.0f;
-        static bool[] toggleState = { true, false, true, false, true };
+         double sliderValue = 0.5f;
+         int selectedTabIndex = 0;
+         Vector2 chartPosition = new Vector2(0, 0);
+         double zoomLevel = 1.0f;
+         bool[] toggleState = { true, false, true, false, true };
 
         // Sample data for visualization
-        static double[] dataPoints = { 0.2f, 0.5f, 0.3f, 0.8f, 0.4f, 0.7f, 0.6f };
-        static readonly string[] tabNames = { "Dashboard", "Analytics", "Profile", "Settings", "Windows" };
+         double[] dataPoints = { 0.2f, 0.5f, 0.3f, 0.8f, 0.4f, 0.7f, 0.6f };
+         readonly string[] tabNames = { "Dashboard", "Analytics", "Profile", "Settings", "Windows" };
 
         //Theme
-        static Color backgroundColor;
-        static Color cardBackground;
-        static Color primaryColor;
-        static Color secondaryColor;
-        static Color textColor;
-        static Color lightTextColor;
-        static Color[] colorPalette;
-        static bool isDark;
+         Color backgroundColor;
+         Color cardBackground;
+         Color primaryColor;
+         Color secondaryColor;
+         Color textColor;
+         Color lightTextColor;
+         Color[] colorPalette;
+         bool isDark;
 
-        static double time = 0;
+         double time = 0;
 
-        static string searchText = "";
-        static bool searchFocused = false;
+         string searchText = "";
+         bool searchFocused = false;
 
-        public static void Initialize()
+        public  void Initialize()
         {
             ToggleTheme();
             fontSystem = new FontSystem();
@@ -73,7 +73,7 @@ namespace Shared
             DefineStyles();
         }
 
-        private static void DefineStyles()
+        public void DefineStyles()
         {
             // Sidebar styles
             Paper.DefineStyle("sidebar")
@@ -124,7 +124,7 @@ namespace Shared
                 .BackgroundColor(Color.FromArgb(30, 0, 0, 0));
         }
 
-        public static void RenderUI()
+        public  void Render()
         {
             // Update time for animations
             time += 0.016f; // Assuming ~60fps
@@ -162,10 +162,15 @@ namespace Shared
             }
         }
 
-        public static bool isWindowAOpen = true;
-        public static bool isWindowBOpen = true;
+        public void RenderThumbnail()
+        {
 
-        private static void TestWindows()
+        }
+
+        public  bool isWindowAOpen = true;
+        public  bool isWindowBOpen = true;
+
+        private  void TestWindows()
         {
             // Window Tests
             WindowManager.SetWindowFont(fontMedium);
@@ -226,7 +231,7 @@ namespace Shared
             //);
         }
 
-        private static void ToggleTheme()
+        private  void ToggleTheme()
         {
             isDark = !isDark;
 
@@ -270,7 +275,7 @@ namespace Shared
             DefineStyles();
         }
 
-        private static void RenderTopNavBar()
+        private  void RenderTopNavBar()
         {
             using (Paper.Row("TopNavBar")
                 .Height(70)
@@ -344,7 +349,7 @@ namespace Shared
             }
         }
 
-        private static void RenderSidebar()
+        private  void RenderSidebar()
         {
             using (Paper.Column("Sidebar")
                 .Style("sidebar")
@@ -430,7 +435,7 @@ namespace Shared
             }
         }
 
-        private static void RenderMainContent()
+        private  void RenderMainContent()
         {
             using (Paper.Column("MainContent")
                 .Margin(0, 15, 15, 15)
@@ -452,7 +457,7 @@ namespace Shared
             }
         }
 
-        private static void RenderTabsNavigation()
+        private  void RenderTabsNavigation()
         {
             using (Paper.Row("TabsNav")
                 .Height(60)
@@ -490,7 +495,7 @@ namespace Shared
             }
         }
 
-        private static void RenderDashboardTab()
+        private  void RenderDashboardTab()
         {
             using (Paper.Row("DashboardCards")
                 .Height(120)
@@ -522,7 +527,7 @@ namespace Shared
                         .Enter())
                     {
                         // Card icon
-                        Paper.Box($"StatIcon_{i}")
+                        Paper.Box($"on_{i}")
                              .Size(40)
                              .BackgroundColor(Color.FromArgb(150, colorPalette[i % colorPalette.Length]))
                              .Rounded(8)
@@ -798,7 +803,7 @@ namespace Shared
             }
         }
 
-        private static void RenderAnalyticsTab()
+        private  void RenderAnalyticsTab()
         {
             using (Paper.Row("AnalyticsContent")
                 .Enter())
@@ -1042,7 +1047,7 @@ namespace Shared
 
         }
 
-        private static void RenderProfileTab()
+        private  void RenderProfileTab()
         {
             using (Paper.Row("ProfileContent")
                 .Margin(0, 0, 15, 0)
@@ -1292,7 +1297,7 @@ namespace Shared
             }
         }
 
-        private static void RenderSettingsTab()
+        private  void RenderSettingsTab()
         {
             using (Paper.Row("SettingsContent")
                 .Margin(0, 0, 15, 0)
@@ -1410,7 +1415,7 @@ namespace Shared
                 }
             }
         }
-        private static void RenderWindowsTab()
+        private  void RenderWindowsTab()
         {
             using (Paper.Row("WindowsContent")
                 .Margin(0, 0, 15, 0)
@@ -1438,13 +1443,13 @@ namespace Shared
             }
         }
 
-        private static void OpenWindows()
+        private  void OpenWindows()
         {
             isWindowAOpen = true;
             isWindowBOpen = true;
         }
 
-        private static void RenderFooter()
+        private  void RenderFooter()
         {
             using (Paper.Row("Footer")
                 .Height(50)
