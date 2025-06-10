@@ -9,26 +9,28 @@ namespace Shared
 {
     public class DemoSelector
     {
-        public static FontSystem fontSystem;
-        public static SpriteFontBase fontSmall;
-        public static SpriteFontBase fontMedium;
-        public static SpriteFontBase fontLarge;
-        public static SpriteFontBase fontTitle;
+        FontSystem fontSystem;
+        SpriteFontBase fontSmall;
+        SpriteFontBase fontMedium;
+        SpriteFontBase fontLarge;
+        SpriteFontBase fontTitle;
 
         //Theme
-        public static Color backgroundColor;
-        public static Color cardBackground;
-        public static Color primaryColor;
-        public static Color secondaryColor;
-        public static Color tertiaryColor;
-        public static Color textColor;
-        public static Color lightTextColor;
-        public static Color[] colorPalette;
-        public static bool isDark;
+        Color backgroundColor;
+        Color cardBackground;
+        Color thumbBackground;
+        Color primaryColor;
+        Color secondaryColor;
+        Color tertiaryColor;
+        Color textColor;
+        Color lightTextColor;
+        Color[] colorPalette;
+        bool isDark;
 
-        static IDemoThumbnail[] demos;
+        IDemoThumbnail[] demos;
+        int selectedDemo = -1;
 
-        public static double time = 0;
+        double time = 0;
 
         public void Initialize()
         {
@@ -61,6 +63,7 @@ namespace Shared
 
             demos = new IDemoThumbnail[]
             {
+                new PaperDemo(),
                 new ComponentDemo(),
             };
         }
@@ -85,20 +88,42 @@ namespace Shared
 
         private void RenderMainContent()
         {
-            using (Paper.Column("MainContent")
-            .Style("mainContent")
-            .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
-            .Transition(GuiProp.BorderColor, 0.75f)
-            .Transition(GuiProp.BorderWidth, 0.75f)
-            .Transition(GuiProp.Rounded, 0.25f)
-            .Margin(15)
+            if (selectedDemo > -1)
+            {
+                demos[selectedDemo].DefineStyles();
+                demos[selectedDemo].Render();
+                return;
+            }
+
+            using (Paper.Row("demoGrid")
+            .Style("demoGrid")
+
             .Enter())
             {
-                foreach (var demo in demos)
+                for (int i = 0; i < demos.Length; i++)
                 {
-                    Paper.Box("Header").Height(60).Text(Text.Center(demo.GetType().Name, fontMedium, textColor));
-                    demo.DefineStyles();
-                    demo.RenderThumbnail();
+                    var demo = demos[i];
+                    var index = i;
+                    var demoName = demo.GetType().Name;
+                    using (Paper.Box(demoName)
+                        .Style("demoCard")
+                        .OnClick((x) =>
+                        {
+                            demos[index].Initialize();
+                            selectedDemo = index;
+                        })
+                        .Enter())
+                    {
+                        demo.DefineStyles();
+
+                        using (Paper.Box(demoName)
+                          .Style("demoThumb")
+                          .Enter())
+                        {
+                            demo.RenderThumbnail();
+                        }
+                        Paper.Box("DemoName").Height(60).Text(Text.Center(demoName, fontMedium, textColor));
+                    }
                 }
             }
         }
@@ -117,6 +142,59 @@ namespace Shared
 
         private void DefineStyles()
         {
+            if (isDark)
+            {
+                //Dark
+                backgroundColor = Color.FromArgb(255, 18, 18, 23);
+                cardBackground = Color.FromArgb(255, 30, 30, 46);
+                primaryColor = Color.FromArgb(255, 94, 104, 202);
+                secondaryColor = Color.FromArgb(255, 162, 155, 254);
+                tertiaryColor = Color.FromArgb(255, 255, 255, 0);
+                textColor = Color.FromArgb(255, 226, 232, 240);
+                lightTextColor = Color.FromArgb(255, 148, 163, 184);
+                colorPalette = [
+                    Color.FromArgb(255, 94, 234, 212),   // Cyan
+                    Color.FromArgb(255, 162, 155, 254),  // Purple  
+                    Color.FromArgb(255, 249, 115, 22),   // Orange
+                    Color.FromArgb(255, 248, 113, 113),  // Red
+                    Color.FromArgb(255, 250, 204, 21)    // Yellow
+                ];
+            }
+            else
+            {
+                //Light
+                backgroundColor = Color.FromArgb(255, 243, 244, 246);
+                cardBackground = Color.FromArgb(255, 255, 255, 255);
+                thumbBackground = Color.FromArgb(255, 200, 200, 200);
+                primaryColor = Color.FromArgb(255, 59, 130, 246);
+                secondaryColor = Color.FromArgb(255, 16, 185, 129);
+                tertiaryColor = Color.FromArgb(255, 255, 255, 0);
+                textColor = Color.FromArgb(255, 31, 41, 55);
+                lightTextColor = Color.FromArgb(255, 107, 114, 128);
+                colorPalette = [
+                    Color.FromArgb(255, 59, 130, 246),   // Blue
+                    Color.FromArgb(255, 16, 185, 129),   // Teal  
+                    Color.FromArgb(255, 239, 68, 68),    // Red
+                    Color.FromArgb(255, 245, 158, 11),   // Amber
+                    Color.FromArgb(255, 139, 92, 246)    // Purple
+                ];
+            }
+
+            Paper.DefineStyle("demoCard")
+                .Margin(15)
+                .Rounded(10)
+                .Height(300)
+                .BackgroundColor(cardBackground);
+
+            Paper.DefineStyle("demoGrid")
+                .Margin(15)
+                .BackgroundColor(backgroundColor);
+
+
+            Paper.DefineStyle("demoThumb")
+                .Margin(8)
+                .Rounded(10)
+                .BackgroundColor(primaryColor);
         }
     }
 }
