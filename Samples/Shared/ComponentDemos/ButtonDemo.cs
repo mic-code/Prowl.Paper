@@ -19,7 +19,11 @@ public class ButtonDemo : IDemo
 
         Paper.DefineStyle("button.rounded2")
             .BackgroundColor(ComponentDemo.primaryColor)
-            .Rounded(8, 8, 0, 0);
+            .RoundedTop(8);
+
+        Paper.DefineStyle("button.rounded3")
+            .BackgroundColor(ComponentDemo.primaryColor)
+            .RoundedBottom(8);
 
         Paper.DefineStyle("button.hover")
             .BackgroundColor(ComponentDemo.secondaryColor);
@@ -36,15 +40,13 @@ public class ButtonDemo : IDemo
 
     public void Render()
     {
-        //Paper.Box("Header").Height(60).Text(Text.Center("Button", ComponentDemo.fontMedium, ComponentDemo.textColor));
-
         using (Paper.Box("Button")
                            .Style("button")
                            .Transition(GuiProp.BackgroundColor, 0.25f, Paper.Easing.EaseIn)
                            .Focused.Style("button.focused").End()
                            .Active.Style("button.active").End()
                            .Hovered.Style("button.hover").End()
-                           .Text(Text.Center("Button", ComponentDemo.fontMedium, Color.White))
+                           .Text(Text.Center("Round Button", ComponentDemo.fontMedium, Color.White))
                            .OnClick((rect) => Console.WriteLine("Clicked"))
                            .Enter()) { }
 
@@ -55,7 +57,7 @@ public class ButtonDemo : IDemo
                            .Focused.Style("button.focused").End()
                            .Active.Style("button.active").End()
                            .Hovered.Style("button.hover").End()
-                          .Text(Text.Center("Button", ComponentDemo.fontMedium, Color.White))
+                          .Text(Text.Center("Rect Button", ComponentDemo.fontMedium, Color.White))
                           .OnClick((rect) => Console.WriteLine("Clicked"))
                           .Enter()) { }
 
@@ -66,7 +68,19 @@ public class ButtonDemo : IDemo
                            .Focused.Style("button.focused").End()
                            .Active.Style("button.active").End()
                            .Hovered.Style("button.hover").End()
-                          .Text(Text.Center("Button", ComponentDemo.fontMedium, Color.White))
+                          .Text(Text.Center("Top Round Button", ComponentDemo.fontMedium, Color.White))
+                          .OnClick((rect) => Console.WriteLine("Clicked"))
+                          .Enter()) { }
+
+
+        using (Paper.Box("Button")
+                          .Style("button")
+                          .Style("button.rounded3")
+                          .Transition(GuiProp.BackgroundColor, 0.25f, Paper.Easing.EaseIn)
+                           .Focused.Style("button.focused").End()
+                           .Active.Style("button.active").End()
+                           .Hovered.Style("button.hover").End()
+                          .Text(Text.Center("Bottom Round Button", ComponentDemo.fontMedium, Color.White))
                           .OnClick((rect) => Console.WriteLine("Clicked"))
                           .Enter()) { }
     }
