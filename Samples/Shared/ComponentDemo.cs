@@ -1,13 +1,12 @@
 ﻿using FontStashSharp;
 using System.Drawing;
 using Prowl.PaperUI;
-using Prowl.Vector;
 using System.Reflection;
 using Shared.ComponentDemos;
 
 namespace Shared
 {
-    public class ComponentDemo
+    public class ComponentDemo : IDemoThumbnail
     {
         public static FontSystem fontSystem;
         public static SpriteFontBase fontSmall;
@@ -15,15 +14,7 @@ namespace Shared
         public static SpriteFontBase fontLarge;
         public static SpriteFontBase fontTitle;
 
-        // Track state for interactive elements
-        double sliderValue = 0.5f;
         int selectedTabIndex = 0;
-        Vector2 chartPosition = new Vector2(0, 0);
-        double zoomLevel = 1.0f;
-        bool[] toggleState = { true, false, true, false, true };
-
-        // Sample data for visualization
-        double[] dataPoints = { 0.2f, 0.5f, 0.3f, 0.8f, 0.4f, 0.7f, 0.6f };
 
         //Theme
         public static Color backgroundColor;
@@ -35,13 +26,9 @@ namespace Shared
         public static Color lightTextColor;
         public static Color[] colorPalette;
         public static bool isDark;
-
-        static IDemo[] demos;
-
         public static double time = 0;
 
-        string searchText = "";
-        bool searchFocused = false;
+        static IDemo[] demos;
 
         public void Initialize()
         {
@@ -76,121 +63,12 @@ namespace Shared
             {
                 new ButtonDemo(),
                 new ToggleDemo(),
-                new ListDemo()
+                new SliderDemo(),
+                new ListDemo(),
             };
         }
 
-        public void RenderUI()
-        {
-            // Update time for animations
-            time += 0.016f; // Assuming ~60fps
-
-            DefineStyles();
-
-            using (Paper.Column("MainContainer").BackgroundColor(backgroundColor).Enter())
-            {
-                RenderTopNavBar();
-
-                using (Paper.Row("ContentArea").Enter())
-                {
-                    RenderSidebar();
-                    RenderMainContent();
-                }
-
-                RenderFooter();
-            }
-        }
-
-        private void RenderTopNavBar()
-        {
-
-        }
-        private void RenderSidebar()
-        {
-            using (Paper.Column("Sidebar")
-             .Style("sidebar")
-             .Hovered.Style("sidebar.expanded").End()
-             .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
-             .Transition(GuiProp.BorderColor, 0.75f)
-             .Transition(GuiProp.BorderWidth, 0.75f)
-             .Transition(GuiProp.Rounded, 0.25f)
-             .Margin(15)
-             .Enter())
-            {
-                // Menu header
-                Paper.Box("MenuHeader").Height(60).Text(Text.Center("Menu", fontMedium, textColor));
-                string[] menuIcons = { Icons.House, Icons.ChartBar, Icons.User, Icons.Gear, Icons.WindowMaximize };
-
-                for (int i = 0; i < demos.Length; i++)
-                {
-                    int index = i;
-
-                    using (Paper.Box($"MenuItemContainer_{i}")
-                        .Height(50)
-                        .Margin(10, 10, 5, 5)
-                        .Rounded(8)
-                        .BorderColor(primaryColor)
-                        .BorderWidth(selectedTabIndex == index ? 2 : 0)
-                        .OnClick((rect) => selectedTabIndex = index)
-                        .Hovered
-                            .BackgroundColor(Color.FromArgb(20, primaryColor))
-                            //.BorderWidth(2)
-                            .End()
-                        //.Transition(GuiProp.BackgroundColor, 0.05f)
-                        .Transition(GuiProp.BorderWidth, 0.1f)
-                        .Clip()
-                        .Enter()
-                        )
-                    {
-                        var icon = Paper.Box($"MenuItemIcon_{i}")
-                            .Width(55)
-                            .Height(50)
-                            .Text(Text.Center(menuIcons[i], fontSmall, textColor));
-
-                        var but = Paper.Box($"MenuItem_{i}")
-                            .Width(100)
-                            .PositionType(PositionType.SelfDirected)
-                            .Left(50 + 15)
-                            .Text(Text.Center($"{demos[i].GetType().Name.Replace("Demo", "")}", fontSmall, textColor));
-                    }
-                }
-            }
-        }
-
-        private void RenderMainContent()
-        {
-            using (Paper.Column("MainContent")
-            .Style("mainContent")
-            .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
-            .Transition(GuiProp.BorderColor, 0.75f)
-            .Transition(GuiProp.BorderWidth, 0.75f)
-            .Transition(GuiProp.Rounded, 0.25f)
-            .Margin(0, 15, 15, 15)
-            .Enter())
-            {
-                if (selectedTabIndex < demos.Length)
-                {
-                    var demo = demos[selectedTabIndex];
-                    Paper.Box("Header").Height(60).Text(Text.Center(demo.GetType().Name, ComponentDemo.fontMedium, ComponentDemo.textColor));
-                    demo.DefineStyle();
-                    demo.Render();
-                }
-            }
-        }
-
-        private void RenderFooter()
-        {
-
-        }
-
-        private void ToggleTheme()
-        {
-            isDark = !isDark;
-
-            DefineStyles();
-        }
-
-        private void DefineStyles()
+        public void DefineStyles()
         {
             if (isDark)
             {
@@ -279,6 +157,123 @@ namespace Shared
                 .Height(1)
                 .Margin(15, 15, 0, 0)
                 .BackgroundColor(Color.FromArgb(30, 0, 0, 0));
+        }
+
+        public void Render()
+        {
+            // Update time for animations
+            time += 0.016f; // Assuming ~60fps
+
+            //set style every frame to allow hotreload to work
+            DefineStyles();
+
+            using (Paper.Column("MainContainer").BackgroundColor(backgroundColor).Enter())
+            {
+                RenderTopNavBar();
+
+                using (Paper.Row("ContentArea").Enter())
+                {
+                    RenderSidebar();
+                    RenderMainContent();
+                }
+
+                RenderFooter();
+            }
+        }
+
+        public void RenderThumbnail()
+        {
+
+        }
+
+        private void RenderTopNavBar()
+        {
+
+        }
+
+        private void RenderSidebar()
+        {
+            using (Paper.Column("Sidebar")
+             .Style("sidebar")
+             .Hovered.Style("sidebar.expanded").End()
+             .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
+             .Transition(GuiProp.BorderColor, 0.75f)
+             .Transition(GuiProp.BorderWidth, 0.75f)
+             .Transition(GuiProp.Rounded, 0.25f)
+             .Margin(15)
+             .Enter())
+            {
+                // Menu header
+                Paper.Box("MenuHeader").Height(60).Text(Text.Center("Menu", fontMedium, textColor));
+                string[] menuIcons = { Icons.House, Icons.ChartBar, Icons.User, Icons.Gear, Icons.WindowMaximize };
+
+                for (int i = 0; i < demos.Length; i++)
+                {
+                    int index = i;
+
+                    using (Paper.Box($"MenuItemContainer_{i}")
+                        .Height(50)
+                        .Margin(10, 10, 5, 5)
+                        .Rounded(8)
+                        .BorderColor(primaryColor)
+                        .BorderWidth(selectedTabIndex == index ? 2 : 0)
+                        .OnClick((rect) => selectedTabIndex = index)
+                        .Hovered
+                            .BackgroundColor(Color.FromArgb(20, primaryColor))
+                            //.BorderWidth(2)
+                            .End()
+                        //.Transition(GuiProp.BackgroundColor, 0.05f)
+                        .Transition(GuiProp.BorderWidth, 0.1f)
+                        .Clip()
+                        .Enter()
+                        )
+                    {
+                        var icon = Paper.Box($"MenuItemIcon_{i}")
+                            .Width(55)
+                            .Height(50)
+                            .Text(Text.Center(menuIcons[i], fontSmall, textColor));
+
+                        var but = Paper.Box($"MenuItem_{i}")
+                            .Width(100)
+                            .PositionType(PositionType.SelfDirected)
+                            .Left(50 + 15)
+                            .Text(Text.Center($"{demos[i].GetType().Name.Replace("Demo", "")}", fontSmall, textColor));
+                    }
+                }
+            }
+        }
+
+        private void RenderMainContent()
+        {
+            using (Paper.Column("MainContent")
+            .Style("mainContent")
+            .Transition(GuiProp.Width, 0.25f, Paper.Easing.EaseIn)
+            .Transition(GuiProp.BorderColor, 0.75f)
+            .Transition(GuiProp.BorderWidth, 0.75f)
+            .Transition(GuiProp.Rounded, 0.25f)
+            .Margin(0, 15, 15, 15)
+            .Enter())
+            {
+                if (selectedTabIndex < demos.Length)
+                {
+                    var demo = demos[selectedTabIndex];
+                    Paper.Box("Header").Height(60).Text(Text.Center(demo.GetType().Name, fontMedium, textColor));
+                    demo.DefineStyles();
+                    demo.Render();
+                }
+            }
+        }
+
+        private void RenderFooter()
+        {
+
+        }
+
+        private void ToggleTheme()
+        {
+            isDark = !isDark;
+
+            DefineStyles();
         }
     }
 }

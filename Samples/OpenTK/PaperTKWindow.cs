@@ -10,6 +10,7 @@ namespace OpenTKSample
     {
         private PaperRenderer _renderer;
         private ComponentDemo _componentDemo;
+        DemoSelector _selector;
 
         bool componentDemo = true;
 
@@ -22,14 +23,17 @@ namespace OpenTKSample
             base.OnLoad();
             _renderer = new PaperRenderer();
             _renderer.Initialize(ClientRectangle.Size.X, ClientRectangle.Size.Y);
-            if (componentDemo)
-            {
 
-                _componentDemo = new ComponentDemo();
-                _componentDemo.Initialize();
-            }
-            else
-                PaperDemo.Initialize();
+            _selector = new DemoSelector();
+            _selector.Initialize();
+
+            //if (componentDemo)
+            //{
+            //    _componentDemo = new ComponentDemo();
+            //    _componentDemo.Initialize();
+            //}
+            //else
+            //    PaperDemo.Initialize();
 
             Paper.Initialize(_renderer, ClientRectangle.Size.X, ClientRectangle.Size.Y);
         }
@@ -43,10 +47,12 @@ namespace OpenTKSample
 
             Paper.BeginFrame((float)args.Time);
 
-            if (componentDemo)
-                _componentDemo.RenderUI();
-            else
-                PaperDemo.RenderUI();
+            _selector.RenderUI();
+
+            //if (componentDemo)
+            //    _componentDemo.RenderUI();
+            //else
+            //    PaperDemo.RenderUI();
 
             Paper.EndFrame();
 

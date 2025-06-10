@@ -1,5 +1,10 @@
 ﻿internal interface IDemo
 {
-    void DefineStyle();
+    void DefineStyles();
     void Render();
+}
+
+internal interface IDemoThumbnail : IDemo
+{
+    void RenderThumbnail();
 }

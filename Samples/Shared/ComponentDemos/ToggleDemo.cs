@@ -8,7 +8,7 @@ public class ToggleDemo : IDemo
 {
     bool isOn = false;
 
-    public void DefineStyle()
+    public void DefineStyles()
     {
 
         Paper.DefineStyle("row")
@@ -43,8 +43,8 @@ public class ToggleDemo : IDemo
                              .Enter()) { }
 
             using (Paper.Box($"ToggleSwitch")
-                .Style("toggle.rounded")
                 .Style(isOn ? "toggle.on" : "toggle.off")
+                .Style("toggle.rounded")
                 .Transition(GuiProp.BackgroundColor, 0.25f, Paper.Easing.CubicInOut)
                 .OnClick((rect) => { isOn = !isOn; })
                 .Enter())

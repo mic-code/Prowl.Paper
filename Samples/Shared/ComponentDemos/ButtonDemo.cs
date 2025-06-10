@@ -5,7 +5,7 @@ namespace Shared.ComponentDemos;
 
 public class ButtonDemo : IDemo
 {
-    public void DefineStyle()
+    public void DefineStyles()
     {
         Paper.DefineStyle("button")
             .BackgroundColor(ComponentDemo.primaryColor)

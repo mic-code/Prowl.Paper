@@ -5,7 +5,7 @@ namespace Shared.ComponentDemos;
 
 internal class ListDemo : IDemo
 {
-    public void DefineStyle()
+    public void DefineStyles()
     {
 
     }
